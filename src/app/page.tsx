@@ -1,19 +1,18 @@
 "use client";
 
-import { useRouter } from "next/router";
-import { ChangeEvent, useState } from "react";
+import { useUser } from "@/components/providers/contexts/UserContext";
+import Router, { useRouter } from "next/router";
+import { ChangeEvent } from "react";
 import { io } from "socket.io-client";
 
 export default function Home() {
 	const socket = io("http://localhost:4000");
-
-	const [room, setRoom] = useState<string>("");
-	const [username, setUserName] = useState<string>("");
 	const router = useRouter();
+	const { username, setUsername, room, setRoom } = useUser();
 
 	const joinRoom = () => {
 		socket.emit("join_room", room);
-		router.push(`/chat/${username}`);
+		router.push("/chat/" + username);
 	};
 	return (
 		<main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -24,7 +23,7 @@ export default function Home() {
 						placeholder="enter room id"
 						className="py-1 text-black focus:outline rounded-md p-2"
 						onChange={(e: ChangeEvent<HTMLInputElement>) =>
-							setRoom(e.target.value)
+							setRoom && setRoom(e.target.value)
 						}
 					/>
 					<input
@@ -32,7 +31,7 @@ export default function Home() {
 						placeholder="enter your username"
 						className="py-1 text-black focus:outline rounded-md p-2"
 						onChange={(e: ChangeEvent<HTMLInputElement>) =>
-							setUserName(e.target.value)
+							setUsername && setUsername(e.target.value)
 						}
 					/>
 					<button
